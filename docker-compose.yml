@@ -87,6 +87,8 @@ services:
       - gerente
       - orquestrador
       - cliente
+      - conta
+      - auth
     image: rabbitmq:3.11.8-management
     ports:
       - "5672:5672"
@@ -119,6 +121,7 @@ services:
       - orquestrador
       - cliente
       - auth
+      - conta
     image: "orquestrador:latest"
     build:
       context: ./bantads-orquestrador
