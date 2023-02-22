@@ -343,10 +343,10 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 });
 
 //TRANSACAO
-app.post('/transacaos', async (req, res, next) => {
-  httpProxy('http://localhost:5003', {
+app.post(process.env.PATH_TRANSACAO, async (req, res, next) => {
+  httpProxy(process.env.HOST_TRANSACAO, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
-        return bodyContent;
+      return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
@@ -365,8 +365,8 @@ app.post('/transacaos', async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get('/transacaos', async (req, res, next) => {
-  httpProxy('http://localhost:5003', {
+app.get(process.env.PATH_TRANSACAO, async (req, res, next) => {
+  httpProxy(process.env.HOST_TRANSACAO, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
     },
@@ -382,8 +382,8 @@ app.get('/transacaos', async (req, res, next) => {
         userRes.status(200);
         return objBody;
       } else {
-       userRes.status(401);
-       return { message: 'Um erro ocorreu ao buscar as transações.' };
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar as transações.' };
       }
     },
   })(req, res, next);
