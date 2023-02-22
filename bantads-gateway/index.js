@@ -115,16 +115,17 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-// CLIENTE
+// CRIAÇÃO CLIENTE + CONTA
 app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
-  httpProxy(process.env.HOST_ORQUESTRADOR, {
+  console.log(req.body)
+  httpProxy(process.env.HOST_ORQUESTRADOR+'/cliente', {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
         userRes.status(201);
         return { message: 'Cadastro realizado com sucesso. Consulte seu e-mail para próximos passos.' };
       } else {
         userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu em seu cadastro. Tente novamente.' };
+        return { message: 'Náo rodou' };
       }
     },
   })(req, res, next);
@@ -343,10 +344,10 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 });
 
 //TRANSACAO
-app.post(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_TRANSACAO, {
+app.post('/transacaos', async (req, res, next) => {
+  httpProxy('http://localhost:5003', {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
-      return bodyContent;
+        return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
@@ -365,8 +366,8 @@ app.post(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_TRANSACAO, {
+app.get('/transacaos', async (req, res, next) => {
+  httpProxy('http://localhost:5003', {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
     },
@@ -382,8 +383,8 @@ app.get(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
         userRes.status(200);
         return objBody;
       } else {
-        userRes.status(401);
-        return { message: 'Um erro ocorreu ao buscar as transações.' };
+       userRes.status(401);
+       return { message: 'Um erro ocorreu ao buscar as transações.' };
       }
     },
   })(req, res, next);
