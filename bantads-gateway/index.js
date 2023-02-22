@@ -118,7 +118,7 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
 // CRIAÇÃO CLIENTE + CONTA
 app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   console.log(req.body)
-  httpProxy(process.env.HOST_ORQUESTRADOR+'/cliente', {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
         userRes.status(201);
@@ -131,9 +131,14 @@ app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   })(req, res, next);
 });
 
-app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CLIENTE, {
+app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, async (req, res, next) => {
+ 
+  console.log(req.body)
+  httpProxy(process.env.HOST_ORQUESTRADOR+"/cliente", {
+  
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      console.log("teste")
+      console.log(_userReq.body)
       if (proxyRes.statusCode == 200) {
         var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
