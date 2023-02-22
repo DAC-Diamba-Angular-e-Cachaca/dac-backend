@@ -39,14 +39,16 @@ services:
       - 27017:27017
     environment:
       - MONGO_INITDB_DATABASE=auth-db
-      - MONGO_INITDB_ROOT_USERNAME=bantads
-      - MONGO_INITDB_ROOT_PASSWORD=bantads
+      # - MONGO_INITDB_ROOT_USERNAME=bantads
+      # - MONGO_INITDB_ROOT_PASSWORD=bantads
     volumes:
         - ./bantads-autenticacao/init.js:/docker-entrypoint-initdb.d/init.js
   conta-db:
     networks: 
       - conta
     container_name: conta-db
+    ports:
+      - "5432:5432"
     image: postgres:15.1-alpine
     restart: always
     environment:
@@ -56,7 +58,6 @@ services:
         - ./bantads-conta/init.sql:/docker-entrypoint-initdb.d/init.sql
   pgadmin:
     networks:
-      - auth
       - cliente
       - gerente
       - conta
@@ -69,12 +70,14 @@ services:
       - 5050:80
     restart: unless-stopped
   mongo-express:
+    networks:
+      - auth
     container_name: mongo-express
-    image: mongo-express
+    image: mongo-express:latest
     environment:
       - ME_CONFIG_MONGODB_SERVER=auth-db
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=bantads
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=bantads
+      # - ME_CONFIG_MONGODB_ADMINUSERNAME=bantads
+      # - ME_CONFIG_MONGODB_ADMINPASSWORD=bantads
     ports:
       - 8081:8081
     restart: always
@@ -110,10 +113,7 @@ services:
     ports:
       - "5001:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mongo://auth-db:27017/mongo
-      - SPRING_DATASOURCE_USERNAME=bantads
-      - SPRING_DATASOURCE_PASSWORD=bantads
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATA_MONGODB_URI=mongodb://auth-db/auth-db
   ###
   orquestrador:
     networks:
@@ -191,7 +191,10 @@ services:
   gateway:
     container_name: gateway
     networks:
+      - auth
       - gerente
+      - cliente
+      - conta
     image: "gateway:latest"
     build:
       context: ./bantads-gateway

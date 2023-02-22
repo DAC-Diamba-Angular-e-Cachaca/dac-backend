@@ -55,12 +55,12 @@ public class UsuarioController {
     public ResponseEntity<String> getUsuarios() {
         try {
             List<Usuario> usuarios = usuarioRepository.findAll();
-            System.out.println(usuarios.get(3).getEmail());
 
             String response = objectMapper.writeValueAsString(usuarios);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
+            // return ResponseEntity.ok(e.getMessage());
         }
     }
 
