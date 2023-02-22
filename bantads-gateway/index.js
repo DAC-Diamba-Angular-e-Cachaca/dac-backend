@@ -171,6 +171,20 @@ app.put(`${process.env.PATH_ORQUESTRADOR}/conta`, verifyJWT,async (req, res, nex
       },
    })(req, res, next);
 });
+// CREATE GERENTE PELO ORQUESTRADOR 
+app.post(process.env.PATH_ORQUESTRADOR + '/gerente',/* verifyJWT ,*/ async (req, res, next) => {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 201) {
+        userRes.status(201);
+        return { message: 'Gerente criado com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao criar gerente.' };
+      }
+    },
+  })(req, res, next);
+});
 
 app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
@@ -389,20 +403,7 @@ app.get('/transacaos', async (req, res, next) => {
   })(req, res, next);
 });
 
-// GERENTE
-app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_GERENTE, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 201) {
-        userRes.status(201);
-        return { message: 'Gerente criado com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao criar gerente.' };
-      }
-    },
-  })(req, res, next);
-});
+
 
 app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
