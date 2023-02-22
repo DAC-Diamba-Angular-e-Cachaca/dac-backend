@@ -118,7 +118,7 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
 });
 
 // CRIAÇÃO CLIENTE + CONTA
-app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
+app.post(process.env.PATH_ORQUESTRADOR + '/cliente',async (req, res, next) => {
   console.log(req.body)
   httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
@@ -135,7 +135,7 @@ app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
 
 
 //ATUALIZAÇÃO DE PERFIL DE CLIENTE VIA ORQUESTRADOR
-app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, async (req, res, next) => {
+app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, verifyJWT,async (req, res, next) => {
  
   console.log(req.body)
   console.log(process.env.HOST_ORQUESTRADOR)
@@ -153,6 +153,23 @@ app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, async (req, res, next) => {
       }
     },
   })(req, res, next);
+});
+
+//ATUALIZAR CONTA VIA ORQUESTRADOR
+app.put(`${process.env.PATH_ORQUESTRADOR}/conta`, verifyJWT,async (req, res, next) => {
+  console.log(req.body)
+   httpProxy(process.env.HOST_ORQUESTRADOR, {
+      userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+        if (proxyRes.statusCode == 200) {
+          var str = Buffer.from(proxyResData).toString('utf-8');
+          userRes.status(200);
+          return str;
+        } else {
+          userRes.status(proxyRes.statusCode);
+          return { message: 'Um erro ocorreu ao alterar a conta.' };
+        }
+      },
+   })(req, res, next);
 });
 
 app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res, next) => {
@@ -223,35 +240,8 @@ app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-// CONTA
-app.post(process.env.PATH_CONTA + '/novo', async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 201) {
-        userRes.status(201);
-        return { message: 'Conta criada com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao criar a conta.' };
-      }
-    },
-  })(req, res, next);
-});
 
-app.put(`${process.env.PATH_CONTA}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
-    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        var str = Buffer.from(proxyResData).toString('utf-8');
-        userRes.status(200);
-        return str;
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao alterar a conta.' };
-      }
-    },
-  })(req, res, next);
-});
+
 
 app.get(process.env.PATH_CONTA + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CONTA, {
