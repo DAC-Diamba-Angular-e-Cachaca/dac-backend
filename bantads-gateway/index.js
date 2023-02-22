@@ -343,7 +343,7 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 });
 
 //TRANSACAO
-app.post(process.env.PATH_TRANSACAO, async (req, res, next) => {
+app.post(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_TRANSACAO, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
@@ -365,7 +365,7 @@ app.post(process.env.PATH_TRANSACAO, async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get(process.env.PATH_TRANSACAO, async (req, res, next) => {
+app.get(process.env.PATH_TRANSACAO, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_TRANSACAO, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
