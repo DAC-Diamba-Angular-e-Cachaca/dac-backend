@@ -117,8 +117,9 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
+//ORQUESTRADOR REQUISIÇÕES
 // CRIAÇÃO CLIENTE + CONTA
-app.post(process.env.PATH_ORQUESTRADOR + '/cliente',async (req, res, next) => {
+app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   console.log(req.body)
   httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
@@ -135,14 +136,14 @@ app.post(process.env.PATH_ORQUESTRADOR + '/cliente',async (req, res, next) => {
 
 
 //ATUALIZAÇÃO DE PERFIL DE CLIENTE VIA ORQUESTRADOR
-app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, verifyJWT,async (req, res, next) => {
- 
+app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, verifyJWT, async (req, res, next) => {
+
   console.log(req.body)
   console.log(process.env.HOST_ORQUESTRADOR)
   httpProxy(process.env.HOST_ORQUESTRADOR, {
-  
+
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-     
+
       if (proxyRes.statusCode == 201) {
         var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
@@ -156,23 +157,23 @@ app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, verifyJWT,async (req, res, n
 });
 
 //ATUALIZAR CONTA VIA ORQUESTRADOR
-app.put(`${process.env.PATH_ORQUESTRADOR}/conta`, verifyJWT,async (req, res, next) => {
+app.put(`${process.env.PATH_ORQUESTRADOR}/conta`, verifyJWT, async (req, res, next) => {
   console.log(req.body)
-   httpProxy(process.env.HOST_ORQUESTRADOR, {
-      userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-        if (proxyRes.statusCode == 200) {
-          var str = Buffer.from(proxyResData).toString('utf-8');
-          userRes.status(200);
-          return str;
-        } else {
-          userRes.status(proxyRes.statusCode);
-          return { message: 'Um erro ocorreu ao alterar a conta.' };
-        }
-      },
-   })(req, res, next);
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar a conta.' };
+      }
+    },
+  })(req, res, next);
 });
 // CREATE GERENTE PELO ORQUESTRADOR 
-app.post(process.env.PATH_ORQUESTRADOR + '/gerente',/* verifyJWT ,*/ async (req, res, next) => {
+app.post(process.env.PATH_ORQUESTRADOR + '/gerente', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
@@ -185,6 +186,22 @@ app.post(process.env.PATH_ORQUESTRADOR + '/gerente',/* verifyJWT ,*/ async (req,
     },
   })(req, res, next);
 });
+
+//EXCLUIR GERENTE PELO ORQUESTRADOR
+app.delete(`${process.env.PATH_ORQUESTRADOR}/gerente/:id`, verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        userRes.status(200);
+        return { message: 'Gerente excluído com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+//ORQUESTRADOR REQUISIÇÕES FIM
 
 app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
@@ -360,7 +377,7 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 app.post('/transacaos', async (req, res, next) => {
   httpProxy('http://localhost:5003', {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
-        return bodyContent;
+      return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
@@ -396,8 +413,8 @@ app.get('/transacaos', async (req, res, next) => {
         userRes.status(200);
         return objBody;
       } else {
-       userRes.status(401);
-       return { message: 'Um erro ocorreu ao buscar as transações.' };
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar as transações.' };
       }
     },
   })(req, res, next);
@@ -420,19 +437,6 @@ app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => 
   })(req, res, next);
 });
 
-app.delete(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_GERENTE, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        userRes.status(200);
-        return { message: 'Gerente excluído com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao alterar o gerente.' };
-      }
-    },
-  })(req, res, next);
-});
 
 app.get(process.env.PATH_GERENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
