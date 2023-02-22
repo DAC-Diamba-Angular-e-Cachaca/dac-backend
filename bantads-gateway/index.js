@@ -31,6 +31,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
       retBody.email = login;
       retBody.senha = senha;
       bodyContent = retBody;
+      console.log(bodyContent)
     } catch (e) {
       console.log('ERRO: ' + e);
     }
@@ -50,6 +51,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
       userRes.status(200);
       return { auth: true, token, data: objBody };
     } else {
+      console.log
       userRes.status(401);
       return { message: 'Login inválido!' };
     }
@@ -131,15 +133,17 @@ app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   })(req, res, next);
 });
 
+
+//ATUALIZAÇÃO DE PERFIL DE CLIENTE VIA ORQUESTRADOR
 app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, async (req, res, next) => {
  
   console.log(req.body)
-  httpProxy(process.env.HOST_ORQUESTRADOR+"/cliente", {
+  console.log(process.env.HOST_ORQUESTRADOR)
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
   
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      console.log("teste")
-      console.log(_userReq.body)
-      if (proxyRes.statusCode == 200) {
+     
+      if (proxyRes.statusCode == 201) {
         var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
         return str;
