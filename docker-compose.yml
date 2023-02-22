@@ -1,7 +1,20 @@
 version: "3"
 
 services:
-  #####
+  ##########
+  ### Front
+  front:
+    container_name: front
+    image: front:latest
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./bantads:/app:rw
+
+  ##########
   ### Bancos
   gerente-db:
     networks:
@@ -82,7 +95,7 @@ services:
       - 8081:8081
     restart: always
   
-  #####
+  ##########
   ### RabbitMQ
   rabbitmq:
     container_name: rabbitmq
@@ -96,7 +109,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-  #####
+  ##########
   ### Aplicações
   auth:
     container_name: auth
@@ -204,7 +217,7 @@ services:
       - /app/node_modules
     ports:
       - "5000:5000"
-
+#####
 ## Networks
 networks:
   auth:
