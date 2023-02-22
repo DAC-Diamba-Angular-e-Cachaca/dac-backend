@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "spring.datasource.jdbc-url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbc-url'"
+  },
+  {
+    "name": "spring.read-datasource.jdbc-url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.read-datasource.jdbc-url'"
+  },
+  {
+    "name": "spring.read.allow-bean-definition-overriding",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.read.allow-bean-definition-overriding'"
+  },
+  {
+    "name": "spring.read-datasource.username",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.read-datasource.username'"
+  },
+  {
+    "name": "spring.read-datasource.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.read-datasource.password'"
+  },
+  {
+    "name": "spring.read-datasource.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.read-datasource.driver-class-name'"
+  }
+]}
