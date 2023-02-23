@@ -11,7 +11,7 @@ const cors = require('cors');
 
 // Configs
 const app = express();
-const PORT = 5000;
+const PORT = 5010;
 dotenv.config({ path: `${process.env.NODE_ENV !== undefined ? '.env.dev' : '.env'}` });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -39,13 +39,13 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
     return bodyContent;
   },
   proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
-    console.log("oi")
+    
     proxyReqOpts.headers['Content-Type'] = 'application/json';
     proxyReqOpts.method = 'POST';
     return proxyReqOpts;
   },
   userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
-    console.log("oi")
+   console.log(userReq.body)
     if (proxyRes.statusCode === 200) {
       const str = Buffer.from(proxyResData).toString('utf-8');
       const objBody = JSON.parse(str);
@@ -75,7 +75,9 @@ function verifyJWT(req, res, next) {
 
 // AUTENTICACAO
 app.post(process.env.PATH_AUTENTICACAO + '/login', (req, res, next) => {
-    loginServiceProxy(req, res, next);
+  console.log(req.body);
+  //return res.json(req.body);
+   loginServiceProxy(req, res, next);
 });
 
 app.post(process.env.PATH_AUTENTICACAO + '/logout', verifyJWT, (req, res) => {

@@ -31,13 +31,16 @@ CREATE TABLE conta (
 	rejeitado_data DATE
 );
 
--- INSERT INTO conta(id_usuario, data, ativo, saldo, id_gerente, salario, rejeitado_motivo, rejeitado_data) VALUES 
--- 	(1, '2023-01-04', true, 3000, 6, 1500, null, null), 
--- 	(2, '2023-01-05', true, 500, 6, 3000, null, null), 
--- 	(3, '2023-01-06', true, 100, 7, 2000, null, null);
+INSERT INTO conta(id_usuario, data, ativo, saldo, id_gerente, salario, rejeitado_motivo, rejeitado_data) VALUES 
+ 	(1, '2023-01-04', true, 3000, 6, 1500, null, null), 
+ 	(2, '2023-01-05', true, 500, 6, 3000, null, null), 
+ 	(3, '2023-01-06', true, 100, 7, 2000, null, null);
+
 DROP DATABASE IF EXISTS contacud;
 
 CREATE DATABASE contacud;
+
+ 
 
 \c contacud;
 
@@ -67,3 +70,9 @@ CREATE TABLE conta (
 	rejeitado_motivo VARCHAR(60),
 	rejeitado_data DATE
 );
+
+
+INSERT INTO conta(id_usuario, data, ativo, saldo, id_gerente, salario, rejeitado_motivo, rejeitado_data) VALUES 
+ 	(1, '2023-01-04', true, 3000, 6, 1500, null, null), 
+ 	(2, '2023-01-05', true, 500, 6, 3000, null, null), 
+ 	(3, '2023-01-06', true, 100, 7, 2000, null, null);
