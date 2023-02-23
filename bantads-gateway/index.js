@@ -26,6 +26,7 @@ app.use(cors());
 const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
   proxyReqBodyDecorator: function (bodyContent, srcReq) {
     try {
+      console.log("oi")
       const { login, senha } = bodyContent;
       const retBody = {};
       retBody.email = login;
@@ -37,11 +38,13 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
     return bodyContent;
   },
   proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+    console.log("oi")
     proxyReqOpts.headers['Content-Type'] = 'application/json';
     proxyReqOpts.method = 'POST';
     return proxyReqOpts;
   },
   userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+    console.log("oi")
     if (proxyRes.statusCode === 200) {
       const str = Buffer.from(proxyResData).toString('utf-8');
       const objBody = JSON.parse(str);
@@ -70,7 +73,7 @@ function verifyJWT(req, res, next) {
 
 // AUTENTICACAO
 app.post(process.env.PATH_AUTENTICACAO + '/login', (req, res, next) => {
-  loginServiceProxy(req, res, next);
+    loginServiceProxy(req, res, next);
 });
 
 app.post(process.env.PATH_AUTENTICACAO + '/logout', verifyJWT, (req, res) => {

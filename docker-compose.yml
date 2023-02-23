@@ -7,7 +7,7 @@ services:
     container_name: front
     image: front:latest
     build:
-      context: ./front
+      context: ./bantads
       dockerfile: Dockerfile
     ports:
       - "4200:4200"
@@ -18,7 +18,7 @@ services:
   ### Bancos
   gerente-db:
     networks:
-      - gerente
+      - bantads
     container_name: gerente-db
     image: postgres:15.1-alpine
     restart: always
@@ -31,7 +31,7 @@ services:
         - ./bantads-gerente/init.sql:/docker-entrypoint-initdb.d/init.sql
   cliente-db:
     networks: 
-      - cliente
+      - bantads
     container_name: cliente-db
     image: postgres:15.1-alpine
     restart: always
@@ -44,7 +44,7 @@ services:
         - ./bantads-cliente/init.sql:/docker-entrypoint-initdb.d/init.sql
   auth-db:
     networks:
-      - auth
+      - bantads
     container_name: auth-db
     image: mongo
     restart: always
@@ -58,7 +58,7 @@ services:
         - ./bantads-autenticacao/init.js:/docker-entrypoint-initdb.d/init.js
   conta-db:
     networks: 
-      - conta
+      - bantads
     container_name: conta-db
     ports:
       - "5432:5432"
@@ -71,9 +71,7 @@ services:
         - ./bantads-conta/init.sql:/docker-entrypoint-initdb.d/init.sql
   pgadmin:
     networks:
-      - cliente
-      - gerente
-      - conta
+      - bantads
     container_name: pgadmin
     image: dpage/pgadmin4
     environment:
@@ -84,7 +82,7 @@ services:
     restart: unless-stopped
   mongo-express:
     networks:
-      - auth
+      - bantads
     container_name: mongo-express
     image: mongo-express:latest
     environment:
@@ -100,11 +98,7 @@ services:
   rabbitmq:
     container_name: rabbitmq
     networks:
-      - gerente
-      - orquestrador
-      - cliente
-      - conta
-      - auth
+      - bantads
     image: rabbitmq:3.11.8-management
     ports:
       - "5672:5672"
@@ -114,7 +108,7 @@ services:
   auth:
     container_name: auth
     networks:
-      - auth
+      - bantads
     image: "auth:latest"
     build:
       context: ./bantads-autenticacao
@@ -130,11 +124,7 @@ services:
   ###
   orquestrador:
     networks:
-      - gerente
-      - orquestrador
-      - cliente
-      - auth
-      - conta
+      - bantads
     image: "orquestrador:latest"
     build:
       context: ./bantads-orquestrador
@@ -147,7 +137,7 @@ services:
   gerente:
     container_name: gerente
     networks:
-      - gerente
+      - bantads
     image: "gerente:latest"
     build:
       context: ./bantads-gerente
@@ -166,7 +156,7 @@ services:
   cliente:
     container_name: cliente
     networks:
-      - cliente
+      - bantads
     image: "cliente:latest"
     build:
       context: ./bantads-cliente
@@ -185,7 +175,7 @@ services:
   conta:
     container_name: conta
     networks:
-      - conta
+      - bantads
     image: "conta:latest"
     build:
       context: ./bantads-conta
@@ -204,10 +194,7 @@ services:
   gateway:
     container_name: gateway
     networks:
-      - auth
-      - gerente
-      - cliente
-      - conta
+      - bantads
     image: "gateway:latest"
     build:
       context: ./bantads-gateway
@@ -220,13 +207,5 @@ services:
 #####
 ## Networks
 networks:
-  auth:
-    driver: bridge
-  orquestrador:
-    driver: bridge
-  gerente:
-    driver: bridge
-  cliente:
-    driver: bridge
-  conta:
+  bantads:
     driver: bridge
