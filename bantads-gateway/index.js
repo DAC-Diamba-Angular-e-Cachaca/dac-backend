@@ -32,6 +32,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
       retBody.email = login;
       retBody.senha = senha;
       bodyContent = retBody;
+      console.log(bodyContent)
     } catch (e) {
       console.log('ERRO: ' + e);
     }
@@ -53,6 +54,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
       userRes.status(200);
       return { auth: true, token, data: objBody };
     } else {
+      console.log
       userRes.status(401);
       return { message: 'Login inválido!' };
     }
@@ -118,10 +120,11 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
+//ORQUESTRADOR REQUISIÇÕES
 // CRIAÇÃO CLIENTE + CONTA
 app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   console.log(req.body)
-  httpProxy(process.env.HOST_ORQUESTRADOR+'/cliente', {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
         userRes.status(201);
@@ -134,10 +137,17 @@ app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
   })(req, res, next);
 });
 
-app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CLIENTE, {
+
+//ATUALIZAÇÃO DE PERFIL DE CLIENTE VIA ORQUESTRADOR
+app.put(`${process.env.PATH_ORQUESTRADOR}/cliente`, verifyJWT, async (req, res, next) => {
+
+  console.log(req.body)
+  console.log(process.env.HOST_ORQUESTRADOR)
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
+
+      if (proxyRes.statusCode == 201) {
         var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
         return str;
@@ -148,6 +158,53 @@ app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => 
     },
   })(req, res, next);
 });
+
+//ATUALIZAR CONTA VIA ORQUESTRADOR
+app.put(`${process.env.PATH_ORQUESTRADOR}/conta`, verifyJWT, async (req, res, next) => {
+  console.log(req.body)
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar a conta.' };
+      }
+    },
+  })(req, res, next);
+});
+// CREATE GERENTE PELO ORQUESTRADOR 
+app.post(process.env.PATH_ORQUESTRADOR + '/gerente', verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 201) {
+        userRes.status(201);
+        return { message: 'Gerente criado com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao criar gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+//EXCLUIR GERENTE PELO ORQUESTRADOR
+app.delete(`${process.env.PATH_ORQUESTRADOR}/gerente/:id`, verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        userRes.status(200);
+        return { message: 'Gerente excluído com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+//ORQUESTRADOR REQUISIÇÕES FIM
 
 app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
@@ -217,35 +274,8 @@ app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-// CONTA
-app.post(process.env.PATH_CONTA + '/novo', async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 201) {
-        userRes.status(201);
-        return { message: 'Conta criada com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao criar a conta.' };
-      }
-    },
-  })(req, res, next);
-});
 
-app.put(`${process.env.PATH_CONTA}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
-    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        var str = Buffer.from(proxyResData).toString('utf-8');
-        userRes.status(200);
-        return str;
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao alterar a conta.' };
-      }
-    },
-  })(req, res, next);
-});
+
 
 app.get(process.env.PATH_CONTA + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CONTA, {
@@ -350,7 +380,7 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 app.post('/transacaos', async (req, res, next) => {
   httpProxy('http://localhost:5003', {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
-        return bodyContent;
+      return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
@@ -386,27 +416,14 @@ app.get('/transacaos', async (req, res, next) => {
         userRes.status(200);
         return objBody;
       } else {
-       userRes.status(401);
-       return { message: 'Um erro ocorreu ao buscar as transações.' };
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar as transações.' };
       }
     },
   })(req, res, next);
 });
 
-// GERENTE
-app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_GERENTE, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 201) {
-        userRes.status(201);
-        return { message: 'Gerente criado com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao criar gerente.' };
-      }
-    },
-  })(req, res, next);
-});
+
 
 app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
@@ -423,19 +440,6 @@ app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => 
   })(req, res, next);
 });
 
-app.delete(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_GERENTE, {
-    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        userRes.status(200);
-        return { message: 'Gerente excluído com sucesso.' };
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao alterar o gerente.' };
-      }
-    },
-  })(req, res, next);
-});
 
 app.get(process.env.PATH_GERENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
