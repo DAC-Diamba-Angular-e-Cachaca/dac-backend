@@ -63,10 +63,12 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
 
 // Auxiliar functions
 function verifyJWT(req, res, next) {
-  const token = req.headers['x-access-token'];
+  const token = req.headers['x-access-token'].replaceAll('"',"");
+  console.log(req.headers, token);
   if (!token) return res.status(401).json({ auth: false, message: 'Token não fornecido.' });
 
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    console.log("Token:"+token)
     if (err) return res.status(500).json({ auth: false, message: 'Falha ao autenticar o token.' });
     req.userId = decoded.id;
     next();
@@ -317,7 +319,7 @@ app.get(`${process.env.PATH_CONTA}/por-usuario/:userId`, verifyJWT, async (req, 
   })(req, res, next);
 });
 
-app.get(`${process.env.PATH_CONTA}/por-gerente/:gerenteId`, verifyJWT, async (req, res, next) => {
+app.get(`${process.env.PATH_CONTA}/por-gerente/:gerenteId`, verifyJWT,async (req, res, next) => {
   httpProxy(process.env.HOST_CONTA, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;

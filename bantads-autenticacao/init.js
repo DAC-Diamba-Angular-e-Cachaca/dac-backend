@@ -21,6 +21,7 @@ db.usuario.insert([
         "ativo": true
     },
     {
+      "_id":1,
         "email": "gerente1@gerente.com",
         "senha": "1967933a7595b1b98f02a50dc7e9af5f7dcf87efc56721247690bea4b9af0bbe1f864f06429a4cce5a87ed56c73f25f6a8d83c7d359059f4698630f7db661d72",
         "cargo": "Gerente",
