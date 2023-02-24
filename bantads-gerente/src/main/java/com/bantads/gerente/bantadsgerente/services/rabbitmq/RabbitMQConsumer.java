@@ -42,7 +42,9 @@ public class RabbitMQConsumer {
                 System.out.println("Já existe um gerente com este email");
                 return;
             }
+            /*Long id, String nome, String email, String senha, String cpf, String telefone, String cargo */
             Gerente g = new Gerente(
+                gerente.getId(),
                     gerente.getNome(),
                     gerente.getEmail(),
                     gerente.getSenha(),

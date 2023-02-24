@@ -1,14 +1,3 @@
-// db.createUser({
-//     user: 'bantads',
-//     pwd: 'bantads',
-//     roles: [
-//         {
-//             role: 'readWrite',
-//             db: 'auth-db',
-//         },
-//     ],
-// });
-
 db = new Mongo().getDB("auth-db");
 
 db.createCollection('usuario', { capped: false });

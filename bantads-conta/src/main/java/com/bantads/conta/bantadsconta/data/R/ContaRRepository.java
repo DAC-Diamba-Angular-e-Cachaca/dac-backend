@@ -14,6 +14,10 @@ public interface ContaRRepository extends JpaRepository<ContaR, Long> {
     //@Query("from conta where id_gerente = :gerenteId and ativo = false")
     List<ContaR> findByIdGerenteAndAtivo( Long gerenteId,boolean ativo);
 
+    List<ContaR> findByIdGerenteOrderBySaldoDesc(Long gerenteId);
+
+    
+
     List<ContaR> findByIdGerente(Long gerenteId);
 
     Optional<ContaR> findByIdUsuario(Long userId);

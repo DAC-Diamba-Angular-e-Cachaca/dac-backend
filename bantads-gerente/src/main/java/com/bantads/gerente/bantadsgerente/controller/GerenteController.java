@@ -97,14 +97,14 @@ public class GerenteController {
         try {
             if (gerenteRepository.existsByCpf(gerente.getCpf()))
                 return ResponseEntity.status(409).build();
-            Gerente g = new Gerente(
+                    Gerente g = new Gerente(
                     gerente.getNome(),
                     gerente.getEmail(),
                     Security.hash(gerente.getSenha()),
                     gerente.getCpf(),
                     gerente.getTelefone(),
                     gerente.getCargo());
-            Gerente novoGerente = gerenteRepository.save(g);
+                    Gerente novoGerente = gerenteRepository.save(g);
             if (novoGerente != null) {
                 return new ResponseEntity<>(HttpStatus.CREATED);
             } else {

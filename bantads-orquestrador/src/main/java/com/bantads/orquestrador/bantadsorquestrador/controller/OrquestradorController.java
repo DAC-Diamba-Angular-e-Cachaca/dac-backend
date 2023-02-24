@@ -146,9 +146,11 @@ public class OrquestradorController {
         // return new ResponseEntity<>( objectMapper.writeValueAsString(verificacao),
         // HttpStatus.CREATED);
 
+
+       
         var JSON = objectMapper.writeValueAsString(gerenteDTO);
         rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_CREATE_GERENTE, JSON);
-
+        
         System.out.println(JSON);
 
         var jsonResponse = objectMapper

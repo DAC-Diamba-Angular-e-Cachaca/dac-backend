@@ -3,6 +3,8 @@ package com.bantads.conta.bantadsconta.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,21 @@ public class ContaController {
         }
     }
 
+    @GetMapping("/melhores/{gerenteId}")
+    public ResponseEntity<List<ContaDTO>> getMelhoresPorGerenteId(@PathVariable Long gerenteId) {
+        try {
+			System.out.println("gerente");
+            List<ContaR> contas = contaRepository.findByIdGerenteOrderBySaldoDesc(gerenteId);
+			//System.out.println(contas);
+            List<ContaR> bestContas = contas.stream().limit(5).collect(Collectors.toList());
+            List<ContaDTO> response = Arrays.asList(mapper.map(bestContas, ContaDTO[].class));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+			System.out.println(e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @GetMapping("/pendentes/{gerenteId}")
     public ResponseEntity<List<ContaDTO>> getPendentesPorGerenteId(@PathVariable Long gerenteId) {
         try {
@@ -95,6 +112,8 @@ public class ContaController {
             return ResponseEntity.status(500).build();
         }
     }
+
+  
 
     // @PostMapping("/novo")
     // ResponseEntity<ContaDTO> cadastro(@RequestBody ContaDTO contaDto) {

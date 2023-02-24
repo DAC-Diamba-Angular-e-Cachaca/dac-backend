@@ -50,7 +50,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
       const str = Buffer.from(proxyResData).toString('utf-8');
       const objBody = JSON.parse(str);
       const id = objBody.id;
-      const token = jwt.sign({ id }, process.env.SECRET, { expiresIn: 300 });
+      const token = jwt.sign({ id }, process.env.SECRET, { expiresIn: 36000 });
       userRes.status(200);
       return { auth: true, token, data: objBody };
     } else {
@@ -63,7 +63,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
 
 // Auxiliar functions
 function verifyJWT(req, res, next) {
-  const token = req.headers['x-access-token'].replaceAll('"',"");
+  const token = req.headers['x-access-token'];
   console.log(req.headers, token);
   if (!token) return res.status(401).json({ auth: false, message: 'Token não fornecido.' });
 
